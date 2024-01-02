@@ -21,6 +21,17 @@ def get_token():
   with open("/home/rlarsen/.twitch_secrets.toml") as f:
     creds = f.read()
 
-  data = {
-
+  payload = {
+    'client_id': tomlkit.parse(creds)["secrets"]["client_id"],
+    'client_secret': tomlkit.parse(creds)["secrets"]["client_secret"],
+    'grant_type': 'client_credentials'
   }
+
+  r = requests.post('https://id.twitch.tv/oauth2/token', data=payload)
+
+  if "json" in r:
+    print(r.json())
+    return f"{r.json()['access_token']}"
+  else:
+    print(r.text)
+    return f'{r.text}'
