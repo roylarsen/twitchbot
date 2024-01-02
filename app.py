@@ -1,14 +1,14 @@
-from flask import Flask
+from quart import Quart
 import requests, tomlkit
 
-app = Flask(__name__)
+app = Quart(__name__)
 
 @app.route("/")
-def hello_world():
+async def hello_world():
     return "<p>Hello, World!</p>"
 
 @app.route("/health")
-def get_config():
+async def get_config():
   with open("/home/rlarsen/.twitch_secrets.toml", "rb") as f:
       data = f.read()
 
@@ -17,7 +17,7 @@ def get_config():
   return f'<p>{tomlkit.parse(data)["secrets"]["client_id"]}</p>'
 
 @app.route("/request_token")
-def get_token():
+async def get_token():
   with open("/home/rlarsen/.twitch_secrets.toml") as f:
     creds = f.read()
 
@@ -35,3 +35,5 @@ def get_token():
   else:
     print(r.text)
     return f'{r.text}'
+
+app.run()
